@@ -44,10 +44,10 @@ function buildFlightTracker() {
     var time = Date.now();
     var sunPos = SunCalc.getPosition(time, lat, lng)
 
-    var sunDegrees = radians_to_degrees(sunPos.altitude)
-    var weather = getWeatherAtCoords({ lat , lng })
+    var sunDegrees = radians_to_degrees(sunPos.altitude).toFixed(1);
+    var weather = getWeatherAtCoords({ lat , lng });
 
-    var content = `Sun-Altitude: ${sunDegrees}<br> Weather: ${weather}<br> <button class='plane_zoomin' id='${marker._leaflet_id}'>Zoom</button>`
+    var content = `Sun-Altitude: ${sunDegrees} degrees<br> Weather: ${weather}<br> <button class='plane_zoomin' id='${marker._leaflet_id}'>Zoom</button>`
 
     popup.setContent(content);
 

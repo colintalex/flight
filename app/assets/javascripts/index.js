@@ -11,7 +11,7 @@ $(document).ready(function(){
   addBaseMaps();
   addWeather();
   buildFlightTracker();
-  buildSolarCalc();
+  buildSolar();
   addEarthShadow();
   buildLayerMenu();
   addDrawControls();

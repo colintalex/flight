@@ -25,15 +25,15 @@ function buildMap() {
       center: [38.0, -90.50],
     });
 
-  var centerMarker = new L.Marker(map.getCenter()).addTo(map);
+  // var centerMarker = new L.Marker(map.getCenter()).addTo(map);
     
-  map.on('move', function (e) {
-    centerMarker.setLatLng(map.getCenter());
-  });
+  // map.on('move', function (e) {
+  //   centerMarker.setLatLng(map.getCenter());
+  // });
 
 
   map.on('moveend', function () {
-    buildSolarCalc(); //refresh suncalc
+    buildSolar(); //refresh suncalc
   });
 
 
