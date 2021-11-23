@@ -146,6 +146,8 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
+    solar (0.1.2)
+      activesupport
     spring (3.0.0)
     sprockets (4.0.2)
       concurrent-ruby (~> 1.0)
@@ -173,6 +175,7 @@ GEM
 
 PLATFORMS
   x86_64-darwin-19
+  x86_64-darwin-21
 
 DEPENDENCIES
   bootsnap (>= 1.4.4)
@@ -186,13 +189,14 @@ DEPENDENCIES
   rack-mini-profiler (~> 2.0)
   rails (~> 6.1.4, >= 6.1.4.1)
   sass-rails (>= 6)
+  solar
   spring
   turbolinks
   tzinfo-data
   web-console (>= 4.1.0)
 
 RUBY VERSION
-   ruby 2.5.1p57
+   ruby 2.7.4p191
 
 BUNDLED WITH
-   2.2.3
+   2.2.30

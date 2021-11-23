@@ -8,6 +8,40 @@ body {
   margin: auto;
 }
 
-.leaflet-marker-icon.plane {
-  
+#windy {
+  height: 90vh;
+  width: 90vw;
+  margin: auto;
+}
+
+#overlays {
+  position: relative;
+  left: 50px;
+  top: 50px;
+  z-index: 1000;
+  background: aliceblue;
+  width: 200px;
+  border-radius: 4px;
+}
+
+#sun {
+  position: relative;
+  left: 50px;
+  top: 50px;
+  z-index: 1000;
+  background: aliceblue;
+  width: fit-content;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+#polygon {
+  position: relative;
+  left: 50px;
+  top: 50px;
+  z-index: 1000;
+  background: aliceblue;
+  width: fit-content;
+  border-radius: 4px;
+  padding: 10px;
 }
