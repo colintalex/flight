@@ -762,7 +762,7 @@
       L.TimeDimension.Layer.prototype.initialize.call(this, layer, options);
       this._timeCacheBackward = this.options.cacheBackward || this.options.cache || 0;
       this._timeCacheForward = this.options.cacheForward || this.options.cache || 0;
-      this._wmsVersion = this.options.wmsVersion || this.options.version || layer.options.version || "1.1.1";
+      this._wmsVersion = this.options.wmsVersion || this.options.version || layer.options.version || "1.3.0";
       this._getCapabilitiesParams = this.options.getCapabilitiesParams || {};
       this._getCapabilitiesAlternateUrl = this.options.getCapabilitiesUrl || null;
       this._getCapabilitiesAlternateLayerName = this.options.getCapabilitiesLayerName || null;

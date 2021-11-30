@@ -6,6 +6,14 @@ body {
   height: 90vh;
   width: 90vw;
   margin: auto;
+  position: relative;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+}
+
+.plane {
+  filter: hue-rotate(58deg);
 }
 
 #windy {
@@ -15,19 +23,22 @@ body {
 }
 
 #overlays {
-  position: relative;
-  left: 50px;
-  top: 50px;
+  position: absolute;
+  right: 10px;
+  top: 60px;
   z-index: 1000;
   background: aliceblue;
-  width: 200px;
+  width: fit-content;
   border-radius: 4px;
+  padding: 5px 10px;
 }
 
+;
+
 #sun {
-  position: relative;
-  left: 50px;
-  top: 50px;
+  position: absolute;
+  right: 10px;
+  top: 60px;
   z-index: 1000;
   background: aliceblue;
   width: fit-content;
@@ -36,9 +47,9 @@ body {
 }
 
 #polygon {
-  position: relative;
-  left: 50px;
-  top: 50px;
+  position: absolute;
+  right: 10px;
+  top: 180px;
   z-index: 1000;
   background: aliceblue;
   width: fit-content;

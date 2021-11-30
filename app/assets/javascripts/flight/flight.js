@@ -44,15 +44,15 @@ function buildFlightTracker() {
     var time = Date.now();
     var sunPos = SunCalc.getPosition(time, lat, lng)
 
-    var sunDegrees = radians_to_degrees(sunPos.altitude).toFixed(1);
-    var weather = getWeatherAtCoords({ lat , lng });
+    var sunDegrees = radians_to_degrees(sunPos.altitude).toFixed(1) * 10;
+    var weather = getWeatherAtCoords({ lat, lng }).current.weather[0].description;
 
     var content = `Sun-Altitude: ${sunDegrees} degrees<br> Weather: ${weather}<br> <button class='plane_zoomin' id='${marker._leaflet_id}'>Zoom</button>`
 
     popup.setContent(content);
 
     $('.plane_zoomin').on('click', function (e) {
-      map.setView(marker.getLatLng(), 8)
+      map.setView(marker.getLatLng(), 10)
     });
   });
 
@@ -61,14 +61,14 @@ function buildFlightTracker() {
   ////////////////////////////////////////////////////////////////////////////////
   // LatLng Maker (Dev Only)
 
-  for (let step = 0; step < 10; step++) {
+  for (let step = 0; step < 30; step++) {
     setTimeout(function timer() {
       var current_coords = latlngs[step]
       var next_coords;
       if (step % 3 == 0) {
-        next_coords = [current_coords[0] + 0.003, current_coords[1] + 0.002]
+        next_coords = [current_coords[0] + 0.05, current_coords[1] + 0.03]
       } else {
-        next_coords = [current_coords[0] + 0.002, current_coords[1] + 0.003]
+        next_coords = [current_coords[0] + 0.03, current_coords[1] + 0.05]
       }
 
       latlngs.push(next_coords)

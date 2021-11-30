@@ -6,7 +6,7 @@ let map;
 
 var g_overlays = {}
 var g_overlays = {}
-$(document).ready(function(){
+$(function(){
   buildMap();
   addBaseMaps();
   addWeather();

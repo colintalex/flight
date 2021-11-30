@@ -1,25 +1,32 @@
 function addWeather() {
-
-  var osmLayer = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
-  });
-  g_overlays['osm'] = osmLayer;
-
-  var wmsUrl = "https://nowcoast.noaa.gov/arcgis/services/nowcoast/radar_meteo_imagery_nexrad_time/MapServer/WMSServer"
-  var radarWMS = L.nonTiledLayer.wms(wmsUrl, {
-    layers: '1',
+  var radarUrl = 'https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0q.cgi?';
+  var radarWMS = L.tileLayer.wms(radarUrl, {
+    layers: 'nexrad-n0q-900913',
     format: 'image/png',
     transparent: true,
-    opacity: 0.8,
-    attribution: 'nowCOAST'
   });
 
-  var testTimeLayer = L.timeDimension.layer.wms(radarWMS, {
-    updateTimeDimension: false,
-    wmsVersion: '1.3.0'
+  var cloudWMS = L.tileLayer('http://{s}.tile.openweathermap.org/map/clouds/{z}/{x}/{y}.png?appid={apiKey}', {
+    maxZoom: 19,
+    attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+    apiKey: 'd289e36e27a95791f32966b535cfc2da',
+    opacity: 1,
   });
-  g_overlays['radar'] = testTimeLayer
-  testTimeLayer.addTo(map);
+
+  var testWMS = L.tileLayer('http://maps.openweathermap.org/maps/2.0/weather/CL/{z}/{x}/{y}?appid={API key}', {
+    maxZoom: 19,
+    attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+    apiKey: 'd289e36e27a95791f32966b535cfc2da',
+    opacity: 1,
+  });
+
+
+  g_overlays['radar'] = radarWMS
+  g_overlays['clouds'] = cloudWMS
+
+  cloudWMS.addTo(map);
+  radarWMS.addTo(map);
+
 
   var theLegend = L.control({
     position: 'topright'
@@ -46,7 +53,8 @@ function getWeatherAtCoords(coords){
     url: url,
     async: false,
     success: function(data) {
-      weather = data.current.weather[0].description
+      // debugger
+      weather = data
     },
     error: function(resp){
       console.log(resp)
