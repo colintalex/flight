@@ -78,7 +78,7 @@ function buildFlightTracker() {
   
 
   ///////////////////////////////////////////////////////////////////////////////
-  // LatLng Maker (Dev Only
+  // LatLng Maker (Dev Only>>
 
   for (let step = 0; step < 30; step++) {
     setTimeout(function timer() {
