@@ -47,7 +47,7 @@ function buildFlightTracker() {
     var weather = getWeatherAtCoords({ lat, lng }).current.weather[0].description;
     var sunAngleTimes = getSunAngleWindow(time, lat, lng)
 
-    var posWeather = getWeatherAtCoords(center);
+    var posWeather = getWeatherAtCoords(marker.getLatLng());
     var posTimezone = posWeather.timezone;
     var currentSunPos = SunCalc.getPosition(time, lat, lng).altitude;
     var noonSunPos = SunCalc.getPosition(times.solarNoon, lat, lng).altitude;
@@ -59,7 +59,7 @@ function buildFlightTracker() {
 
     // debugger
     var content = 
-    `Current Sun Angle: ${currentSunPos.altitude.toFixed(2)} degrees` +
+    `Current Sun Angle: ${currentSunPos.toFixed(2)} degrees` +
     `<br>Max Sun Angle: ${noonSunPos.toFixed(2)}` +
     `<br>30 deg Start: ${flyStartLocal}` +
     `<br>30 deg End: ${flyEndLocal}` +
