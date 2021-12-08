@@ -42,28 +42,12 @@ function buildFlightTracker() {
 
     var { lat, lng } = marker.getLatLng();
     var time = Date.now();
-    var times = SunCalc.getTimes(new Date(), lat, lng);
-    
+    var sunPos = SunCalc.getPosition(time, lat, lng)
+
+    var sunDegrees = radians_to_degrees(sunPos.altitude).toFixed(1) * 10;
     var weather = getWeatherAtCoords({ lat, lng }).current.weather[0].description;
-    var sunAngleTimes = getSunAngleWindow(time, lat, lng)
 
-    var posWeather = getWeatherAtCoords(center);
-    var posTimezone = posWeather.timezone;
-    var currentSunPos = SunCalc.getPosition(time, lat, lng).altitude;
-    var noonSunPos = SunCalc.getPosition(times.solarNoon, lat, lng).altitude;
-
-    var flyStartLocal = new Date(times.flyStart).toLocaleTimeString("en-us", { timeZone: posTimezone });
-    var flyStartMtn = new Date(times.flyStart).toLocaleTimeString("en-us", { timeZone: 'America/Denver' });
-    var flyEndLocal = new Date(times.flyEnd).toLocaleTimeString("en-us", { timeZone: posTimezone });
-    var flyEndMtn = new Date(times.flyEnd).toLocaleTimeString("en-us", { timeZone: 'America/Denver' });
-
-    // debugger
-    var content = 
-    `Current Sun Angle: ${currentSunPos.altitude.toFixed(2)} degrees` +
-    `<br>Max Sun Angle: ${noonSunPos.toFixed(2)}` +
-    `<br>30 deg Start: ${flyStartLocal}` +
-    `<br>30 deg End: ${flyEndLocal}` +
-    `<br> Weather: ${weather}<br> <button class='plane_zoomin' id='${marker._leaflet_id}'>Zoom</button>`
+    var content = `Sun-Altitude: ${sunDegrees} degrees<br> Weather: ${weather}<br> <button class='plane_zoomin' id='${marker._leaflet_id}'>Zoom</button>`
 
     popup.setContent(content);
 

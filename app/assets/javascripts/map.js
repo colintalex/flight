@@ -6,7 +6,8 @@ function buildMap() {
 
   map = L.map('map', {
       zoom: 5,
-      minZoom: 2,
+      minZoom: 5,
+      maxBounds: [[67.208, -49.404], [-4.379, -160.234]],
       fullscreenControl: true,
       center: [39.25, -99.50],
     });
@@ -60,30 +61,24 @@ function addDrawControls() {
 };
 
 function buildAreaDetail(layer, center) {
-  var { lat, lng } = center;
+  // get timezone for area center
+        // with active flights time may be determined by starting airport?
+  
   var time = Date.now();
-  var times = SunCalc.getTimes(new Date(), lat, lng);
-
+  var sunPos = SunCalc.getPosition(time, center.lat, center.lng);
   var posWeather = getWeatherAtCoords(center);
-  var posTimezone = posWeather.timezone;
-  var currentSunPos = SunCalc.getPosition(time, lat, lng).altitude;
-  var noonSunPos = SunCalc.getPosition(times.solarNoon, lat, lng).altitude;
-
-  var flyStartLocal = new Date(times.flyStart).toLocaleTimeString("en-us", { timeZone: posTimezone });
-  var flyStartMtn = new Date(times.flyStart).toLocaleTimeString("en-us", { timeZone: 'America/Denver' });
-  var flyEndLocal = new Date(times.flyEnd).toLocaleTimeString("en-us", { timeZone: posTimezone });
-  var flyEndMtn = new Date(times.flyEnd).toLocaleTimeString("en-us", { timeZone: 'America/Denver' });
-
-
+  var times = SunCalc.getTimes(new Date(), center.lat, center.lng);
+  var setTimeHere = times.sunset.toLocaleTimeString();
+  var setTimeThere = new Date(times.sunset - times.sunset.setMinutes(posWeather.timezone_offset));
+  // debugger
   $('#polygon').empty();
   $('#polygon').append(`` +
-    `Current Sun Angle: ${currentSunPos.toFixed(2)} deg` +
-    `<br>Max Sun Angle: ${noonSunPos.toFixed(2)} deg` +
-    `<br>Local 30 deg Window:` + 
-    `<br>${flyStartLocal} to ${flyEndLocal}` +
-    `<br>MST:` +
-    `<br>${flyStartMtn} to ${flyEndMtn}` +
-    `<br>Weather: ${posWeather.current.weather[0].description}`
+    `Sun Angle: ${sunPos.altitude.toFixed(3)} ` +
+    `<br>Weather: ${posWeather.current.weather[0].description}` +
+    `<br>Sunset Time:` +
+    `<br>Localtime:${setTimeThere.toLocaleTimeString()}` +
+    `<br>Where you are:${setTimeHere}` +
+    `<br>Sunset Countdown: <br>${times.sunsetStart.getHours()} hours, ${times.sunsetStart.getMinutes()} minutes to sunset.`
     );
 };
 
