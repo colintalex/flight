@@ -14,6 +14,7 @@ function buildFlightTracker() {
     ]
   }).addTo(map);
 
+  // ///////////////////////////////////////////////////////////////////////////
   // PLANE MARKER
   var angle = 0;
   var duration = 2000; //time in secs for marker to move from A to B.
