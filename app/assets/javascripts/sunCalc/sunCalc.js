@@ -93,7 +93,7 @@
 
     return {
       azimuth: azimuth(H, phi, c.dec),
-      altitude: altitude(H, phi, c.dec)
+      altitude: radiansToDegrees(altitude(H, phi, c.dec))
     };
   };
 
@@ -104,9 +104,7 @@
     [-0.833, 'sunrise', 'sunset'],
     [-0.3, 'sunriseEnd', 'sunsetStart'],
     [-6, 'dawn', 'dusk'],
-    [-12, 'nauticalDawn', 'nauticalDusk'],
-    [-18, 'nightEnd', 'night'],
-    [6, 'goldenHourEnd', 'goldenHour']
+    [30, 'flyStart', 'flyEnd']
   ];
 
   // adds a custom time to the times config
@@ -126,7 +124,6 @@
   function solarTransitJ(ds, M, L) { return J2000 + ds + 0.0053 * sin(M) - 0.0069 * sin(2 * L); }
 
   function hourAngle(h, phi, d) { return acos((sin(h) - sin(phi) * sin(d)) / (cos(phi) * cos(d))); }
-  function observerAngle(height) { return -2.076 * Math.sqrt(height) / 60; }
 
   // returns set time for the given sun altitude
   function getSetJ(h, lw, phi, dec, n, M, L) {
@@ -137,17 +134,12 @@
   }
 
 
-  // calculates sun times for a given date, latitude/longitude, and, optionally,
-  // the observer height (in meters) relative to the horizon
+  // calculates sun times for a given date and latitude/longitude
 
-  SunCalc.getTimes = function (date, lat, lng, height) {
-
-    height = height || 0;
+  SunCalc.getTimes = function (date, lat, lng) {
 
     var lw = rad * -lng,
       phi = rad * lat,
-
-      dh = observerAngle(height),
 
       d = toDays(date),
       n = julianCycle(d, lw),
@@ -159,19 +151,18 @@
 
       Jnoon = solarTransitJ(ds, M, L),
 
-      i, len, time, h0, Jset, Jrise;
+      i, len, time, Jset, Jrise;
 
 
     var result = {
       solarNoon: fromJulian(Jnoon),
-      nadir: fromJulian(Jnoon - 0.5)
+      nadir: fromJulian(Jnoon + 0.5)
     };
 
     for (i = 0, len = times.length; i < len; i += 1) {
       time = times[i];
-      h0 = (time[0] + dh) * rad;
 
-      Jset = getSetJ(h0, lw, phi, dec, n, M, L);
+      Jset = getSetJ(time[0] * rad, lw, phi, dec, n, M, L);
       Jrise = Jnoon - (Jset - Jnoon);
 
       result[time[1]] = fromJulian(Jrise);
