@@ -42,9 +42,11 @@ function buildFlightTracker() {
 
     var { lat, lng } = marker.getLatLng();
     var time = Date.now();
-    var times = SunCalc.getTimes(new Date(), lat, lng);
-    
+    var sunPos = SunCalc.getPosition(time, lat, lng)
+
+    var sunDegrees = radians_to_degrees(sunPos.altitude).toFixed(1) * 10;
     var weather = getWeatherAtCoords({ lat, lng }).current.weather[0].description;
+
     var sunAngleTimes = getSunAngleWindow(time, lat, lng)
 
     var posWeather = getWeatherAtCoords(marker.getLatLng());
@@ -64,6 +66,7 @@ function buildFlightTracker() {
     `<br>30 deg Start: ${flyStartLocal}` +
     `<br>30 deg End: ${flyEndLocal}` +
     `<br> Weather: ${weather}<br> <button class='plane_zoomin' id='${marker._leaflet_id}'>Zoom</button>`
+
 
     popup.setContent(content);
 

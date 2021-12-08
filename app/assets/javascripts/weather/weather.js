@@ -1,24 +1,47 @@
 function addWeather() {
   var radarUrl = 'https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0q.cgi?';
-  var radarWMS = L.nonTiledLayer.wms(radarUrl, {
-    layers: 'nexrad-n0q-m50m',
+  var radarWMS = L.tileLayer.wms(radarUrl, {
+    layers: 'nexrad-n0q-900913',
     format: 'image/png',
     transparent: true,
   });
 
-  var cloudUrl = 'https://nowcoast.noaa.gov/arcgis/services/nowcoast/sat_meteo_imagery_time/MapServer/WMSServer';
-  var cloudWMS = L.nonTiledLayer.wms(cloudUrl, {
-    layers: '9',
-    format: 'image/png',
-    transparent: true,
+  var cloudWMS = L.tileLayer('http://{s}.tile.openweathermap.org/map/clouds/{z}/{x}/{y}.png?appid={apiKey}', {
+    maxZoom: 19,
+    attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+    apiKey: 'd289e36e27a95791f32966b535cfc2da',
+    opacity: 1,
+  });
+
+  var testWMS = L.tileLayer('http://maps.openweathermap.org/maps/2.0/weather/CL/{z}/{x}/{y}?appid={API key}', {
+    maxZoom: 19,
+    attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+    apiKey: 'd289e36e27a95791f32966b535cfc2da',
+    opacity: 1,
   });
 
 
   g_overlays['radar'] = radarWMS
-  g_overlays['cloud'] = cloudWMS
+  g_overlays['clouds'] = cloudWMS
 
-  // cloudWMS.addTo(map);
-  // radarWMS.addTo(map);
+  cloudWMS.addTo(map);
+  radarWMS.addTo(map);
+
+
+  var theLegend = L.control({
+    position: 'topright'
+  });
+
+  theLegend.onAdd = function (map) {
+    var src = "https://nowcoast.noaa.gov/images/legends/radar.png";
+    var div = L.DomUtil.create('div', 'info legend');
+    div.style.width = '270px';
+    div.style.height = '50px';
+    div.innerHTML += '<b>Legend</b><br><img src="' + src + '" alt="legend">';
+    return div;
+  };
+  theLegend.addTo(map);
+
 };
 
 function getWeatherAtCoords(coords){
