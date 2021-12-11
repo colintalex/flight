@@ -93,7 +93,7 @@
 
     return {
       azimuth: azimuth(H, phi, c.dec),
-      altitude: altitude(H, phi, c.dec)
+      altitude: radians_to_degrees(altitude(H, phi, c.dec))
     };
   };
 
@@ -103,10 +103,7 @@
   var times = SunCalc.times = [
     [-0.833, 'sunrise', 'sunset'],
     [-0.3, 'sunriseEnd', 'sunsetStart'],
-    [-6, 'dawn', 'dusk'],
-    [-12, 'nauticalDawn', 'nauticalDusk'],
-    [-18, 'nightEnd', 'night'],
-    [6, 'goldenHourEnd', 'goldenHour']
+    [30, 'flyStart', 'flyEnd']
   ];
 
   // adds a custom time to the times config

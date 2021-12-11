@@ -61,24 +61,15 @@ function addDrawControls() {
 };
 
 function buildAreaDetail(layer, center) {
-  // get timezone for area center
-        // with active flights time may be determined by starting airport?
-  
-  var time = Date.now();
-  var sunPos = SunCalc.getPosition(time, center.lat, center.lng);
-  var posWeather = getWeatherAtCoords(center);
-  var times = SunCalc.getTimes(new Date(), center.lat, center.lng);
-  var setTimeHere = times.sunset.toLocaleTimeString();
-  var setTimeThere = new Date(times.sunset - times.sunset.setMinutes(posWeather.timezone_offset));
-  // debugger
+  var data = getLocationInfo( center.lat, center.lng );
+
   $('#polygon').empty();
   $('#polygon').append(`` +
-    `Sun Angle: ${sunPos.altitude.toFixed(3)} ` +
-    `<br>Weather: ${posWeather.current.weather[0].description}` +
-    `<br>Sunset Time:` +
-    `<br>Localtime:${setTimeThere.toLocaleTimeString()}` +
-    `<br>Where you are:${setTimeHere}` +
-    `<br>Sunset Countdown: <br>${times.sunsetStart.getHours()} hours, ${times.sunsetStart.getMinutes()} minutes to sunset.`
+    `Sun-Angle: ${data.currentSunPos} ` +
+    `<br>Max-Angle: ${data.noonSunPos}` +
+    `<br>30 deg: ${data.flyStartLocal} to ${data.flyEndLocal}` + 
+    `<br>MST: ${data.flyStartMtn} to ${data.flyEndMtn}` +
+    `<br>Weather: ${data.posWeather.current.weather[0].description}` 
     );
 };
 

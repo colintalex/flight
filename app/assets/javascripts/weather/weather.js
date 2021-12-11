@@ -44,9 +44,8 @@ function addWeather() {
 
 };
 
-function getWeatherAtCoords(coords){
+function getWeatherAtCoords(lat, lng){
   let weather;
-  var { lat, lng } = coords;
   const key = 'd289e36e27a95791f32966b535cfc2da'
   const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lng}&appid=${key}`
   $.ajax({
