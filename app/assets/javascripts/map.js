@@ -6,8 +6,6 @@ function buildMap() {
 
   map = L.map('map', {
       zoom: 5,
-      minZoom: 5,
-      maxBounds: [[67.208, -49.404], [-4.379, -160.234]],
       fullscreenControl: true,
       center: [39.25, -99.50],
     });

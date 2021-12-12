@@ -39,7 +39,6 @@ function buildFlightTracker() {
 
   marker.on('click', function(e){
     var popup = e.target.getPopup();
-
     var { lat, lng } = this.getLatLng();
     var data = getLocationInfo( lat, lng )
 

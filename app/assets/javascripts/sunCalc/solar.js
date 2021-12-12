@@ -40,13 +40,13 @@ function getLocationInfo(lat, lng){
 
   var weather = getWeatherAtCoords(lat, lng);
   data.posWeather = weather;
-  data.posTimezone = weather;
+  data.posTimezone = weather.timezone;
   data.currentSunPos = SunCalc.getPosition(time, lat, lng).altitude;
   data.noonSunPos = SunCalc.getPosition(times.solarNoon, lat, lng).altitude;
 
-  var flyStartLocal = new Date(times.flyStart).toLocaleTimeString("en-us", { timeZone: weather.posTimezone });
+  var flyStartLocal = new Date(times.flyStart).toLocaleTimeString("en-us", { timeZone: weather.timezone });
   var flyStartMtn = new Date(times.flyStart).toLocaleTimeString("en-us", { timeZone: 'America/Denver' });
-  var flyEndLocal = new Date(times.flyEnd).toLocaleTimeString("en-us", { timeZone: weather.posTimezone });
+  var flyEndLocal = new Date(times.flyEnd).toLocaleTimeString("en-us", { timeZone: weather.timezone });
   var flyEndMtn = new Date(times.flyEnd).toLocaleTimeString("en-us", { timeZone: 'America/Denver' });
 
 
