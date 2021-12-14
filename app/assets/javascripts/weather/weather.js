@@ -62,3 +62,4 @@ function getWeatherAtCoords(lat, lng){
 }
 
 // change1
+
