@@ -52,7 +52,6 @@ function getWeatherAtCoords(lat, lng){
     url: url,
     async: false,
     success: function(data) {
-      // debugger
       weather = data
     },
     error: function(resp){
