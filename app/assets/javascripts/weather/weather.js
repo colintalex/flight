@@ -61,4 +61,5 @@ function getWeatherAtCoords(lat, lng){
   return weather;
 }
 
-// change7
+// change1
+
