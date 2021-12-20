@@ -24,7 +24,7 @@ function addWeather() {
   g_overlays['radar'] = radarWMS
   g_overlays['clouds'] = cloudWMS
 
-  cloudWMS.addTo(map);
+  // cloudWMS.addTo(map);
   radarWMS.addTo(map);
 
 
