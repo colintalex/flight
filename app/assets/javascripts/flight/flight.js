@@ -95,8 +95,10 @@ function bindPlanePopup(plane) {
     popup.setContent(content);
 
     $.getJSON('./history.json', function (data) {
-      data.trail.concat(plane._flightPath.getLatLngs()[0])
-      plane._flightPath.setLatLngs(data.trail.reverse())
+      console.log(data)
+      var pos = data.trail.reverse().concat(plane._flightPath.getLatLngs()[0])
+      plane._flightPath.setLatLngs([])
+      plane._flightPath.setLatLngs(pos)
       plane.showPath(map)
     })
 
