@@ -32,28 +32,30 @@ function addEarthShadow() {
 };
 
 function getLocationInfo(lat, lng){
-  var data = {}
+  var data = {};
   var time = Date.now();
-  data.sunPos = SunCalc.getPosition(time, lat, lng).altitude
   var times = SunCalc.getTimes(time, lat, lng);
   data.times = times;
+
+  data.currentSunPos = SunCalc.getPosition(time, lat, lng).altitude;
+  data.noonSunPos = SunCalc.getPosition(times.solarNoon, lat, lng).altitude;
 
   var weather = getWeatherAtCoords(lat, lng);
   data.posWeather = weather;
   data.posTimezone = weather.timezone;
-  data.currentSunPos = SunCalc.getPosition(time, lat, lng).altitude;
-  data.noonSunPos = SunCalc.getPosition(times.solarNoon, lat, lng).altitude;
 
-  var flyStartLocal = new Date(times.flyStart).toLocaleTimeString("en-us", { timeZone: weather.timezone });
-  var flyStartMtn = new Date(times.flyStart).toLocaleTimeString("en-us", { timeZone: 'America/Denver' });
-  var flyEndLocal = new Date(times.flyEnd).toLocaleTimeString("en-us", { timeZone: weather.timezone });
-  var flyEndMtn = new Date(times.flyEnd).toLocaleTimeString("en-us", { timeZone: 'America/Denver' });
-
-
-  data.flyStartLocal = flyStartLocal == 'Invalid Date' ? 'n/a' : flyStartLocal;
-  data.flyEndLocal = flyEndLocal == 'Invalid Date' ? 'n/a' : flyEndLocal;
-  data.flyStartMtn = flyStartMtn == 'Invalid Date' ? 'n/a' : flyStartMtn;
-  data.flyEndMtn = flyEndMtn == 'Invalid Date' ? 'n/a' : flyEndMtn;
+  data.flyStartLocal = timeZoneTime(times.flyStart, weather.timezone);
+  data.flyEndLocal = timeZoneTime(times.flyEnd, weather.timezone);
+  data.flyStartMtn = timeZoneTime(times.flyEnd);
+  data.flyEndMtn = timeZoneTime(times.flyEnd)
 
   return data;
-} 
+}
+
+function timeZoneTime(time, tZone='America/Denver') {
+  var newTime = new Date(time).toLocaleTimeString("en-us", { timeZone: tZone });
+  if (newTime == 'Invalid Date')
+    newTime = 'n/a';
+
+  return newTime;
+}
