@@ -1,83 +1,134 @@
+var duration = 20000; //time in secs for marker to move from A to B..
+
 function buildFlightTracker() {
 
-  //Initial Position
-  var latlngs = [
-    [38.80191266823473, -104.69899901104442]
-  ];
-  var start_coords = latlngs[0]
-  var polyline = L.polyline(latlngs).addTo(map);
+  $.getJSON('./feed_dump.json', function (data) {
+    createFleet(data)
+  })
 
-  var decorator = L.polylineDecorator(polyline, {
-    patterns: [
-      // defines a pattern of 10px-wide dashes, repeated every 20px on the line
-      { offset: 0, repeat: 60, symbol: new L.Symbol.arrowHead({ pixelSize: 10 }) }
-    ]
-  }).addTo(map);
+  // var polyline = L.polyline(flightPath).addTo(map);
+  // var decorator = L.polylineDecorator(polyline, {
+  //   patterns: [{ 
+  //     offset: 0,
+  //     repeat: 60,
+  //     symbol: new L.Symbol.arrowHead({ pixelSize: 10 }) 
+  //   }]
+  // }).addTo(map);
 
   // ///////////////////////////////////////////////////////////////////////////
   // PLANE MARKER
-  var angle = 0;
-  var duration = 2000; //time in secs for marker to move from A to B..
+
+  // get list of planes from db, save globally
+  // get flight data from stream (FR24)
+  // get active planes (list of aircraft in stream)
+  // update positions for each active craft
+  
+
+}
+
+function buildPlane(initial_coords) {
 
   var planeIcon = L.icon({
     iconUrl: "/assets/plane.svg",
     iconSize: [24, 24], // size of the icon
     iconAnchor: [12, 12],
-    className: 'plane'
+    className: 'plane',
+    showFlightPath: false
   });
 
-  var marker = L.Marker.movingMarker([start_coords, [38.8231, -104.8001]], [duration], {
-    icon: planeIcon,
-    rotationAngle: 0,
-    rotationOrigin: 'center',
-    tempLine: true,
-    tempLineColor: 'orange'
-  }).addTo(map);
+  return L.Marker.movingPlaneMarker([initial_coords, initial_coords], [duration], {
+            icon: planeIcon
+          });
+}
 
+function createFleet(data) {
+  var planeLayer = L.layerGroup()
 
-  marker.bindPopup();
+  for (const key in data){
+    if (key == 'full_count' || key == 'version'){
+      continue;
+    }
+    // console.log(data[key][1])
+    const lat = data[key][1];
+    const lng = data[key][2];
+    const heading = data[key][3]
+    const altitude = data[key][4]
+    const ground_speed = data[key][5]
+    
+    var plane = buildPlane([lat,lng]);
+    plane.identifier = key
+    plane.model = data[key][8];
+    plane.tail_num = data[key][9];
+    plane.altitude = data[key][4];
+    plane.setRotationAngle(heading);
+    bindPlanePopup(plane)
+    
+    plane.addTo(planeLayer)
+    g_flights[key] = plane
+  }
 
-  marker.on('click', function(e){
+  planeLayer.addTo(map);
+  g_overlays['flight'] = planeLayer
+}
+
+function bindPlanePopup(plane) {
+  plane.bindPopup();
+
+  plane.on('popupopen', function (e) {
     var popup = e.target.getPopup();
     var { lat, lng } = this.getLatLng();
-    var data = getLocationInfo( lat, lng )
+    var data = getLocationInfo(lat, lng)
 
-    var content = 
-    `Current Sun Angle: ${data.currentSunPos}` +
-    `<br>Max Sun Angle: ${data.noonSunPos}` +
-    `<br>30 deg: ${data.flyStartLocal} to ${data.flyEndLocal}` + 
-    `<br>MST: ${data.flyStartMtn} to ${data.flyEndMtn}` +
-    `<br> <button class='plane_zoomin' id='${marker._leaflet_id}'>Zoom</button>`
+    var content =
+      `<br>TailNum: ${plane.tail_num}` +
+      `<br>Model: ${plane.model}` +
+      `<br>Altitude: ${plane.altitude}` +
+      `Current Sun Angle: ${data.currentSunPos}` +
+      `<br>Max Sun Angle: ${data.noonSunPos}` +
+      `<br>30 deg: ${data.flyStartLocal} to ${data.flyEndLocal}` +
+      `<br>MST: ${data.flyStartMtn} to ${data.flyEndMtn}` +
+      `<br> <button class='plane_zoomin' id='${plane._leaflet_id}'>Zoom</button>` +
+      `<br> <button class='plane_history_on' id='${plane.identifier}'>History</button>` +
+      `<br> <button class='plane_history_off' id='${plane.identifier}'>History</button>` +
+      `<br>` 
 
     popup.setContent(content);
 
+    $.getJSON('./history.json', function (data) {
+      data.trail.concat(plane._flightPath.getLatLngs()[0])
+      plane._flightPath.setLatLngs(data.trail.reverse())
+      plane.showPath(map)
+    })
+
     $('.plane_zoomin').on('click', function (e) {
-      map.setView(marker.getLatLng(), 10)
+      map.setView(plane.getLatLng(), 10)
+    });
+
+    $('.plane_history_off').on('click', function (e) {
+      plane.hidePath(map)
+    });
+
+    $('.plane_history_on').on('click', function (e) {
+      var identifer = e.target.id
+
+
     });
   });
 
-  
+  plane.on('popupclose', function(e){
+    this.hidePath(map);
+  });
 
-  ///////////////////////////////////////////////////////////////////////////////
-  // LatLng Maker (Dev Only)
-
-  for (let step = 0; step < 30; step++) {
+  for (var i = 0; i < 25; i++){
     setTimeout(function timer() {
-      var current_coords = latlngs[step]
-      var next_coords;
-      if (step % 3 == 0) {
-        next_coords = [current_coords[0] + 0.05, current_coords[1] + 0.03]
-      } else {
-        next_coords = [current_coords[0] + 0.03, current_coords[1] + 0.05]
-      }
+      var {lat, lng} = plane.getLatLng();
+      var newLat, newLng;
+      newLat = lat + 0.05 + Math.random()
+      newLng = lng - 0.05 + Math.random()
 
-      latlngs.push(next_coords)
-      angle = getAngle(current_coords, next_coords)
-      marker.setRotationAngle(angle)
-      marker.moveTo(next_coords, duration);
-
-      polyline.addLatLng(current_coords)
-      decorator.redraw()
-    }, step * duration);
-  };
+      var angle = getAngle([lat, lng], [newLat, newLng])
+      plane.setRotationAngle(angle)
+      plane.moveTo([newLat, newLng], 3000)
+    }, i * 3000);
+  }
 }

@@ -8,7 +8,7 @@ L.interpolatePosition = function (p1, p2, duration, t) {
     p1.lng + k * (p2.lng - p1.lng));
 };
 
-L.Marker.MovingMarker = L.Marker.extend({
+L.Marker.MovingPlaneMarker = L.Marker.extend({
 
   //state constants
   statics: {
@@ -23,7 +23,11 @@ L.Marker.MovingMarker = L.Marker.extend({
     loop: false,
     tempLine: false,
     tempLineColor: 'orange',
-    tempLineOpacity: '30%'
+    tempLineOpacity: '30%',
+    rotationAngle: 0,
+    rotationOrigin: 'center',
+    tempLine: true,
+    tempLineColor: 'orange'
   },
 
   initialize: function (latlngs, durations, options) {
@@ -42,7 +46,7 @@ L.Marker.MovingMarker = L.Marker.extend({
     this._currentDuration = 0;
     this._currentIndex = 0;
 
-    this._state = L.Marker.MovingMarker.notStartedState;
+    this._state = L.Marker.MovingPlaneMarker.notStartedState;
     this._startTime = 0;
     this._startTimeStamp = 0;  // timestamp given by requestAnimFrame
     this._pauseStartTime = 0;
@@ -50,6 +54,8 @@ L.Marker.MovingMarker = L.Marker.extend({
     this._animRequested = false;
     this._currentLine = [];
     this._stations = {};
+    this._showFlightPath = false;
+    this._flightPath = L.polyline([this._latlngs]);
 
     if(this.options.tempLine){
       this._tempLine = L.polyline([], {
@@ -59,20 +65,32 @@ L.Marker.MovingMarker = L.Marker.extend({
     };
   },
 
+  hidePath: function(map) {
+    this.showFlightPath = false;
+    map.removeLayer(this._flightPath)
+    map.removeLayer(this._tempLine)
+  },
+
+  showPath: function(map) {
+    this.showFlightPath = true;
+    map.addLayer(this._flightPath)
+    map.addLayer(this._tempLine)
+  },
+
   isRunning: function () {
-    return this._state === L.Marker.MovingMarker.runState;
+    return this._state === L.Marker.MovingPlaneMarker.runState;
   },
 
   isEnded: function () {
-    return this._state === L.Marker.MovingMarker.endedState;
+    return this._state === L.Marker.MovingPlaneMarker.endedState;
   },
 
   isStarted: function () {
-    return this._state !== L.Marker.MovingMarker.notStartedState;
+    return this._state !== L.Marker.MovingPlaneMarker.notStartedState;
   },
 
   isPaused: function () {
-    return this._state === L.Marker.MovingMarker.pausedState;
+    return this._state === L.Marker.MovingPlaneMarker.pausedState;
   },
 
   start: function () {
@@ -105,7 +123,7 @@ L.Marker.MovingMarker = L.Marker.extend({
     }
 
     this._pauseStartTime = Date.now();
-    this._state = L.Marker.MovingMarker.pausedState;
+    this._state = L.Marker.MovingPlaneMarker.pausedState;
     this._stopAnimation();
     this._updatePosition();
   },
@@ -123,7 +141,7 @@ L.Marker.MovingMarker = L.Marker.extend({
       this._updatePosition();
     }
 
-    this._state = L.Marker.MovingMarker.endedState;
+    this._state = L.Marker.MovingPlaneMarker.endedState;
     this.fire('end', { elapsedTime: elapsedTime });
   },
 
@@ -134,9 +152,10 @@ L.Marker.MovingMarker = L.Marker.extend({
 
   moveTo: function (latlng, duration) {
     this._stopAnimation();
+    this._flightPath.addLatLng(this.getLatLng())
     this._latlngs = [this.getLatLng(), L.latLng(latlng)];
     this._durations = [duration];
-    this._state = L.Marker.MovingMarker.notStartedState;
+    this._state = L.Marker.MovingPlaneMarker.notStartedState;
     this.start();
     this.options.loop = false;
   },
@@ -151,7 +170,9 @@ L.Marker.MovingMarker = L.Marker.extend({
   onAdd: function (map) {
     L.Marker.prototype.onAdd.call(this, map);
 
-    this._tempLine.addTo(map);
+    if (this._showFlightPath){
+      this.showPath(map)
+    }
 
     if (this.options.autostart && (!this.isStarted())) {
       this.start();
@@ -192,7 +213,7 @@ L.Marker.MovingMarker = L.Marker.extend({
   },
 
   _startAnimation: function () {
-    this._state = L.Marker.MovingMarker.runState;
+    this._state = L.Marker.MovingPlaneMarker.runState;
     this._animId = L.Util.requestAnimFrame(function (timestamp) {
       this._startTime = Date.now();
       this._startTimeStamp = timestamp;
@@ -315,6 +336,6 @@ L.Marker.MovingMarker = L.Marker.extend({
   }
 });
 
-L.Marker.movingMarker = function (latlngs, duration, options) {
-  return new L.Marker.MovingMarker(latlngs, duration, options);
+L.Marker.movingPlaneMarker = function (latlngs, duration, options) {
+  return new L.Marker.MovingPlaneMarker(latlngs, duration, options);
 };
