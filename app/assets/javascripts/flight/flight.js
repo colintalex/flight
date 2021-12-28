@@ -48,18 +48,18 @@ function createFleet(data) {
     if (key == 'full_count' || key == 'version'){
       continue;
     }
-    // console.log(data[key][1])
-    const lat = data[key][1];
-    const lng = data[key][2];
-    const heading = data[key][3]
-    const altitude = data[key][4]
-    const ground_speed = data[key][5]
+    var planeData = data[key]
+    const lat = planeData[1];
+    const lng = planeData[2];
+    const heading = planeData[3]
+    const altitude = planeData[4]
+    const ground_speed = planeData[5]
     
     var plane = buildPlane([lat,lng]);
     plane.identifier = key
-    plane.model = data[key][8];
-    plane.tail_num = data[key][9];
-    plane.altitude = data[key][4];
+    plane.model = planeData[8];
+    plane.tail_num = planeData[9];
+    plane.altitude = planeData[4];
     plane.setRotationAngle(heading);
     bindPlanePopup(plane)
     
@@ -77,13 +77,13 @@ function bindPlanePopup(plane) {
   plane.on('popupopen', function (e) {
     var popup = e.target.getPopup();
     var { lat, lng } = this.getLatLng();
-    var data = getLocationInfo(lat, lng)
+    var data = getLocationInfo(lat, lng);
 
     var content =
-      `<br>TailNum: ${plane.tail_num}` +
-      `<br>Model: ${plane.model}` +
-      `<br>Altitude: ${plane.altitude}` +
-      `Current Sun Angle: ${data.currentSunPos}` +
+      `<br>TailNum: ${this.tail_num}` +
+      `<br>Model: ${this.model}` +
+      `<br>Altitude: ${this.altitude}` +
+      `<br>Current Sun Angle: ${data.currentSunPos}` +
       `<br>Max Sun Angle: ${data.noonSunPos}` +
       `<br>30 deg: ${data.flyStartLocal} to ${data.flyEndLocal}` +
       `<br>MST: ${data.flyStartMtn} to ${data.flyEndMtn}` +
@@ -92,13 +92,16 @@ function bindPlanePopup(plane) {
       `<br> <button class='plane_history_off' id='${plane.identifier}'>History</button>` +
       `<br>` 
 
-    popup.setContent(content);
+      popup.setContent(content);
+
 
     $.getJSON('./history.json', function (data) {
-      console.log(data)
-      var pos = data.trail.reverse().concat(plane._flightPath.getLatLngs()[0])
-      plane._flightPath.setLatLngs([])
-      plane._flightPath.setLatLngs(pos)
+      var currentPath = plane._flightPath.getLatLngs()[0];
+      var trail = data.trail.reverse().concat(currentPath);
+      if (currentPath.length < trail.length)
+        plane._flightPath.setLatLngs(trail);
+
+
       plane.showPath(map)
     })
 
@@ -110,11 +113,6 @@ function bindPlanePopup(plane) {
       plane.hidePath(map)
     });
 
-    $('.plane_history_on').on('click', function (e) {
-      var identifer = e.target.id
-
-
-    });
   });
 
   plane.on('popupclose', function(e){
@@ -128,9 +126,7 @@ function bindPlanePopup(plane) {
       newLat = lat + 0.05 + Math.random()
       newLng = lng - 0.05 + Math.random()
 
-      var angle = getAngle([lat, lng], [newLat, newLng])
-      plane.setRotationAngle(angle)
-      plane.moveTo([newLat, newLng], 3000)
+      plane.flyTo([newLat, newLng], 3000)
     }, i * 3000);
   }
 }

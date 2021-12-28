@@ -8,6 +8,37 @@ L.interpolatePosition = function (p1, p2, duration, t) {
     p1.lng + k * (p2.lng - p1.lng));
 };
 
+L.getAngle = function (A, B) {
+  var rads = null;
+  var latA = A[0];
+  var lonA = A[1];
+  var latB = B[0];
+  var lonB = B[1];
+
+  if (lonA == lonB && latA > latB) {
+    rads = Math.PI;
+  }
+  else if (lonA == lonB && latA < latB) {
+    rads = 0;
+  }
+  else if (lonA > lonB && latA == latB) {
+    rads = -(Math.PI / 2);
+  }
+  else if (lonA < lonB && latA == latB) {
+    rads = Math.PI / 2;
+  }
+  else {
+    var x1 = latA * Math.pow(10, 12);
+    var x2 = latB * Math.pow(10, 12);
+    var y1 = lonA * Math.pow(10, 12);
+    var y2 = lonB * Math.pow(10, 12);
+    rads = Math.atan2(y2 - y1, x2 - x1)
+  }
+  var pi = Math.PI;
+  var angle = rads * (180 / pi);
+  return angle.toFixed(0);
+}
+
 L.Marker.MovingPlaneMarker = L.Marker.extend({
 
   //state constants
@@ -67,14 +98,14 @@ L.Marker.MovingPlaneMarker = L.Marker.extend({
 
   hidePath: function(map) {
     this.showFlightPath = false;
-    map.removeLayer(this._flightPath)
-    map.removeLayer(this._tempLine)
+    map.removeLayer(this._flightPath);
+    map.removeLayer(this._tempLine);
   },
 
   showPath: function(map) {
     this.showFlightPath = true;
-    map.addLayer(this._flightPath)
-    map.addLayer(this._tempLine)
+    map.addLayer(this._flightPath);
+    map.addLayer(this._tempLine);
   },
 
   isRunning: function () {
@@ -150,10 +181,16 @@ L.Marker.MovingPlaneMarker = L.Marker.extend({
     this._durations.push(duration);
   },
 
-  moveTo: function (latlng, duration) {
+  flyTo: function (latlng, duration) {
     this._stopAnimation();
-    this._flightPath.addLatLng(this.getLatLng())
-    this._latlngs = [this.getLatLng(), L.latLng(latlng)];
+    var currentPos = this.getLatLng();
+    var nextPos = L.latLng(latlng);
+
+    var heading = L.getAngle([currentPos.lat, currentPos.lng], [nextPos.lat, nextPos.lng])
+    this.setRotationAngle(heading)
+
+    this._flightPath.addLatLng(currentPos);
+    this._latlngs = [this.getLatLng(), nextPos];
     this._durations = [duration];
     this._state = L.Marker.MovingPlaneMarker.notStartedState;
     this.start();
