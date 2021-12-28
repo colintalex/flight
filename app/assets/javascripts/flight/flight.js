@@ -1,3 +1,5 @@
+const { map } = require("jquery");
+
 var duration = 20000; //time in secs for marker to move from A to B..
 
 function buildFlightTracker() {
@@ -67,8 +69,9 @@ function createFleet(data) {
 
     bindPlanePopup(plane)
     
-    plane.addTo(planeLayer)
-    console.log(g_flights[key])
+    if(!planeLayer.hasLayer(plane))
+      plane.addTo(planeLayer)
+
     g_flights[key] = plane
   }
 
