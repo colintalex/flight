@@ -5,9 +5,9 @@ function buildMap() {
 
 
   map = L.map('map', {
-      zoom: 5,
+      zoom: 10,
       fullscreenControl: true,
-      center: [39.25, -99.50],
+      center: [38.863, -104.50],
     });
 
   map.on('moveend', function () {

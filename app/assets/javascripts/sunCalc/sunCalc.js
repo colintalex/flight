@@ -101,9 +101,7 @@
   // sun times configuration (angle, morning name, evening name)
 
   var times = SunCalc.times = [
-    [-0.833, 'sunrise', 'sunset'],
-    [-0.3, 'sunriseEnd', 'sunsetStart'],
-    [30, 'flyStart', 'flyEnd']
+    [30, 'flyStart', 'flyEnd'],
   ];
 
   // adds a custom time to the times config
