@@ -26,7 +26,13 @@ function buildFlightTracker() {
 
 }
 
-function buildPlane(initial_coords) {
+function buildPlane(planeData, key) {
+  const lat = planeData[1];
+  const lng = planeData[2];
+  const heading = planeData[3]
+  const altitude = planeData[4]
+  const ground_speed = planeData[5]
+  var initial_coords = [lat, lng]
 
   var planeIcon = L.icon({
     iconUrl: "/assets/plane.svg",
@@ -36,31 +42,29 @@ function buildPlane(initial_coords) {
     showFlightPath: false
   });
 
-  return L.Marker.movingPlaneMarker([initial_coords, initial_coords], [duration], {
+  var plane =  L.Marker.movingPlaneMarker([initial_coords, initial_coords], [duration], {
             icon: planeIcon
           });
+
+  plane.identifier = key
+  plane.model = planeData[8];
+  plane.tail_num = planeData[9];
+  plane.altitude = planeData[4];
+
+  plane.setRotationAngle(heading);
+
+  return plane;
 }
 
 function createFleet(data) {
   var planeLayer = L.layerGroup()
 
   for (const key in data){
-    if (key == 'full_count' || key == 'version'){
+    if (key == 'full_count' || key == 'version')
       continue;
-    }
-    var planeData = data[key]
-    const lat = planeData[1];
-    const lng = planeData[2];
-    const heading = planeData[3]
-    const altitude = planeData[4]
-    const ground_speed = planeData[5]
-    
-    var plane = buildPlane([lat,lng]);
-    plane.identifier = key
-    plane.model = planeData[8];
-    plane.tail_num = planeData[9];
-    plane.altitude = planeData[4];
-    plane.setRotationAngle(heading);
+
+    var plane = buildPlane(data[key], key);
+
     bindPlanePopup(plane)
     
     plane.addTo(planeLayer)
@@ -100,8 +104,7 @@ function bindPlanePopup(plane) {
       var trail = data.trail.reverse().concat(currentPath);
       if (currentPath.length < trail.length)
         plane._flightPath.setLatLngs(trail);
-
-
+      
       plane.showPath(map)
     })
 
