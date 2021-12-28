@@ -68,6 +68,7 @@ function createFleet(data) {
     bindPlanePopup(plane)
     
     plane.addTo(planeLayer)
+    console.log(g_flights[key])
     g_flights[key] = plane
   }
 
